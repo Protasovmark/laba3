@@ -5,19 +5,22 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   test:
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Run tests
-      run: python -m unittest discover tests/
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+      - name: Install dependencies
+        run: |
+          mvn dependency:go-offline
+          mvn dependency:resolve
+      - name: Run tests
+        run: |
+          mvn test
+      - name: Check file contents
+        run: |
+          java -cp target/myproject-1.0-SNAPSHOT.jar MyTests
